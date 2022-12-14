@@ -1,0 +1,38 @@
+import bpy
+
+# Iterate over all Principled BSDF nodes in the scene
+for node in bpy.data.materials:
+    if node.node_tree is not None:
+        for n in node.node_tree.nodes:
+            if n.type == "BSDF_PRINCIPLED":
+                # Check each input of the Principled BSDF node
+                # to see if it is connected to an image node
+                for input in n.inputs:
+                    if input.is_linked and input.links[0].from_node.type == "TEX_IMAGE":
+                        # If the image node is connected to a metallic, specular, roughness, 
+                        # transmission, transmission roughness, or normal input,
+                        # set the color space of the image to "Non-Color"
+                        if input.name in ["Metallic", "Specular", "Roughness", "Transmission", "Transmission Roughness", "Normal"]:
+                            input.links[0].from_node.image.colorspace_settings.name = "Non-Color"
+                            
+                        if input.name in ["Base Color", "Subsurface Color", "Emission"]:
+                            input.links[0].from_node.image.colorspace_settings.name = "sRGB"
+
+# Define the keywords to look for in the image names
+RAW_KEYWORDS = ["Normal", "normal", "Normal Map", "normal map", "AO", "Ao"]
+sRGB_KEYWORDS = ["Base_color", "Base Color", "Color", "Albedo", "Colour", "color", "base color", "basecolor"]
+
+# Iterate over all images in the Blender scene
+for image in bpy.data.images:
+    # Check if the image's name contains any of the keywords
+    for keyword in RAW_KEYWORDS:
+        if keyword in image.name:
+            # If it does, change the color space to "Non-Color"
+            image.colorspace_settings.name = "Non-Color"
+            
+    for keyword in sRGB_KEYWORDS:
+        if keyword in image.name:
+            # If it does, change the color space to "Linear ACES"
+            image.colorspace_settings.name = "Linear ACES"
+
+            break
