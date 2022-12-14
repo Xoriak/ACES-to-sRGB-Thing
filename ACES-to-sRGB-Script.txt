@@ -16,7 +16,7 @@ for node in bpy.data.materials:
                             input.links[0].from_node.image.colorspace_settings.name = "Non-Color"
                             
                         if input.name in ["Base Color", "Subsurface Color", "Emission"]:
-                            input.links[0].from_node.image.colorspace_settings.name = "sRGB"
+                            input.links[0].from_node.image.colorspace_settings.name = "Linear ACES"
 
 # Define the keywords to look for in the image names
 RAW_KEYWORDS = ["Normal", "normal", "Normal Map", "normal map", "AO", "Ao"]
